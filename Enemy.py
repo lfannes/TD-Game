@@ -1,6 +1,5 @@
 import pygame
 import Position
-import time
 
 enemyImage = pygame.image.load('images/enemy.png')
 
