@@ -27,14 +27,5 @@ class Enemy:
         screen.blit(enemyImage, (self.position.x, self.position.y))
 
     def move(self, pos):
-        self.position.x += pos.x
-        self.position.y += pos.y
-        #print(self.position)
-
-
-    def get_vel(self, path, step):
-        velX = (path.waypoints[1].pos.x - self.pos.x) / (path.max_time() / step)
-        velY = (path.waypoints[1].pos.y - self.pos.y) / (path.max_time() / step)
-        print(velX)
-        print(velY)
-        return Position.Position(velX, velY)
+        self.position.x = pos.x
+        self.position.y = pos.y
