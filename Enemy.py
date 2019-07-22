@@ -1,5 +1,6 @@
 import pygame
 import Position
+import Path
 
 enemyImage = pygame.image.load('images/enemy.png')
 
@@ -13,6 +14,7 @@ class Enemy:
         self.health = 100
         self.maxHealth = 100
         self.position = Position.Position(self.x, self.y)
+        self.pos = self.position.copy()
         self.hitbox = (self.position.x, self.position.y, enemyImage.get_width(), enemyImage.get_height())
 
     def draw(self, screen):
@@ -23,3 +25,16 @@ class Enemy:
         self.position.x - 22.5, self.position.y - 22.5, enemyImage.get_width(), enemyImage.get_height()
 
         screen.blit(enemyImage, (self.position.x, self.position.y))
+
+    def move(self, pos):
+        self.position.x += pos.x
+        self.position.y += pos.y
+        #print(self.position)
+
+
+    def get_vel(self, path, step):
+        velX = (path.waypoints[1].pos.x - self.pos.x) / (path.max_time() / step)
+        velY = (path.waypoints[1].pos.y - self.pos.y) / (path.max_time() / step)
+        print(velX)
+        print(velY)
+        return Position.Position(velX, velY)

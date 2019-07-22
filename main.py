@@ -15,13 +15,15 @@ def drawGame():
     game.draw(screen)
 
 game = Game.Game()
+clock = pygame.time.Clock()
 
 run = True
 while run:
+    clock.tick(60)
+
+    drawGame()
+
     for event in pygame.event.get():
-
-        drawGame()
-
         if event.type == pygame.QUIT:
             run = False
 
