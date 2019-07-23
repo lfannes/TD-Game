@@ -10,7 +10,7 @@ class Enemy:
     def __init__(self, x, y):
         self.x = x
         self.y = y
-        self.health = 100
+        self.health = 50
         self.maxHealth = 100
         self.position = Position.Position(self.x, self.y)
         self.pos = self.position.copy()

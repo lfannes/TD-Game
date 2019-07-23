@@ -1,20 +1,25 @@
 import Enemy
 import Position
-import Game
+import pygame
+
+pygame.init()
+
+myfont = pygame.font.Font('images/BAUHS93.TTF', 50)
 
 class Wave:
     def __init__(self):
-        self.enemyPerWave = (3, 5)
+        self.enemyPerWave = (3, 5, 8, 12, 18)
         self.enemyList = []
         self.prev_pos = Position.Position(0, 0)
         self.wave = -1
         self.isDone = False
 
     def draw(self, screen, time, path):
-        if not self.isDone:
-            for enemy in self.enemyList:
-                enemy.draw(screen)
-            self.create(time, path)
+        for enemy in self.enemyList:
+            enemy.draw(screen)
+        waveLabel = myfont.render(f"Wave: {self.wave + 1}", 1, (119,136,153))
+        screen.blit(waveLabel, (900, 75))
+        self.create(time, path)
 
 
 
