@@ -1,6 +1,5 @@
 import pygame
 import Position
-import Path
 
 enemyImage = pygame.image.load('images/enemy.png')
 
@@ -16,8 +15,13 @@ class Enemy:
         self.position = Position.Position(self.x, self.y)
         self.pos = self.position.copy()
         self.hitbox = (self.position.x, self.position.y, enemyImage.get_width(), enemyImage.get_height())
+        self.time = 0
+
+    def __repr__(self):
+        return f"Position: {self.position}"
 
     def draw(self, screen):
+
         width = 50 - (50 / self.maxHealth * (self.maxHealth - self.health))
         pygame.draw.rect(screen, (255, 0, 0), (self.hitbox[0], self.hitbox[1] - 15, 50, 7))
         pygame.draw.rect(screen, (0, 228, 0), (self.hitbox[0], self.hitbox[1] - 15, width, 7))

@@ -9,3 +9,9 @@ class Position:
     def copy(self):
         obj = Position(self.x, self.y)
         return obj
+
+    def overPos(self, pos):
+        if self.x >= pos.x or self.y > pos.y:
+            return True
+        else:
+            return False
