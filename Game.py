@@ -15,17 +15,18 @@ class Game:
         self.path = Path.Path()
         pos = Position.Position(0, 0)
         pos.y = 420; self.path.add(pos, 0)
-        pos.x = 90; self.path.add(pos, 0.5)
-        pos.x = 180; self.path.add(pos, 0.5)
-        pos.y = 180; self.path.add(pos, 1)
-        pos.x = 420; self.path.add(pos, 1)
-        pos.y = 500; self.path.add(pos, 1)
-        pos.x = 750; self.path.add(pos, 1)
-        pos.y = 330; self.path.add(pos, 0.5)
-        pos.x = 1250; self.path.add(pos, 1)
+        pos.x = 90; self.path.add(pos, 1)
+        pos.x = 180; self.path.add(pos, 1)
+        pos.y = 180; self.path.add(pos, 2)
+        pos.x = 420; self.path.add(pos, 2)
+        pos.y = 500; self.path.add(pos, 2)
+        pos.x = 750; self.path.add(pos, 2)
+        pos.y = 330; self.path.add(pos, 2)
+        pos.x = 1250; self.path.add(pos, 2)
         self.enemyList = list()
         self.map = Map.Map()
         self.tower = Towers.Tower(50, 210)
+        self.tower2 = Towers.Tower(850, 400)
         self.wave = Wave.Wave()
         self.wave.nextWave()
 
@@ -36,7 +37,10 @@ class Game:
             self.time += diff_time
 
             self.map.draw(screen)
-            self.tower.draw(screen)
+            self.tower.draw(screen, self.time)
+            self.tower.shoot(self.wave.enemyList)
+            self.tower2.draw(screen, self.time)
+            self.tower2.shoot(self.wave.enemyList)
             self.wave.draw(screen, 0.5, self.path)
 
 
