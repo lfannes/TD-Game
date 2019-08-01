@@ -4,9 +4,11 @@ import Towers
 import Path
 import Position
 import Wave
+import Score
 
 towerDefense = pygame.image.load('images/tower-defense.png')
 victory = pygame.image.load('images/victory.png')
+defeat = pygame.image.load('images/defeat.png')
 
 class Game:
     def __init__(self):
@@ -21,14 +23,16 @@ class Game:
         pos.x = 420; self.path.add(pos, 2)
         pos.y = 500; self.path.add(pos, 2)
         pos.x = 750; self.path.add(pos, 2)
-        pos.y = 330; self.path.add(pos, 2)
+        pos.y = 330; self.path.add(pos, 1)
         pos.x = 1250; self.path.add(pos, 2)
+        pos.x = 1350; self.path.add(pos, 2)
         self.enemyList = list()
         self.map = Map.Map()
         self.tower = Towers.Tower(50, 210)
         self.tower2 = Towers.Tower(850, 400)
-        self.wave = Wave.Wave()
+        self.wave = Wave.Wave(self.path)
         self.wave.nextWave()
+        self.score = Score.Score()
 
 
 
@@ -42,6 +46,8 @@ class Game:
             self.tower2.draw(screen, self.time)
             self.tower2.shoot(self.wave.enemyList)
             self.wave.draw(screen, 0.5, self.path)
+            self.score.draw(screen)
+            self.score.hit(self.path, self.wave.enemyList)
 
 
             for enemy in self.wave.enemyList:
@@ -50,10 +56,18 @@ class Game:
                 if newEnemyPos:
                     enemy.move(newEnemyPos)
 
-            lastEnemyPos = self.path.get_pos(self.wave.enemyList[-1].time)
-            if not lastEnemyPos:
+            lastEnemyPos = True
+            if self.wave.wave < len(self.wave.enemyPerWave):
+                lastEnemyPos = self.path.get_pos(self.wave.enemyList[-1].time)
+            if not lastEnemyPos or self.wave.allDead():
                 self.wave.nextWave()
-        else:
+
+            if self.score.isDead:
+                screen.fill((47, 79, 79))
+                screen.blit(towerDefense, (450, 75))
+                screen.blit(defeat, (350, 370))
+
+        if self.wave.isDone and not self.score.isDead:
             screen.fill((47,79,79))
             screen.blit(towerDefense, (450, 75))
             screen.blit(victory, (300, 320))

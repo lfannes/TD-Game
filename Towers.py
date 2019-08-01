@@ -9,7 +9,7 @@ class Tower:
         self.x = x
         self.y = y
         self.position = Position.Position(self.x, self.y)
-        self.damage = 50
+        self.damage = 1
         self.range = 200
         self.reload_ms = 500
         self.maxReload_ms = self.reload_ms
@@ -24,14 +24,12 @@ class Tower:
         self.diff_ms = self.time - self.prev_ms
 
         screen.blit(towerImage, (self.position.x, self.position.y))
-        pygame.draw.rect(screen, (255, 0, 0), self.hitbox, 5)
         width = 104 - (104 / self.maxReload_ms * (self.maxReload_ms - self.reload_ms))
         pygame.draw.rect(screen, (255, 0, 0), (self.hitbox[0], self.hitbox[1] - 15, 104, 10))
         pygame.draw.rect(screen, (0, 228, 0), (self.hitbox[0], self.hitbox[1] - 15, width, 10))
 
         self.prev_ms = self.time
     def shoot(self, enemyList):
-        print("shoot")
         if self.isFullAmmo:
             for enemy in enemyList:
                 distance = self.position.distance(enemy.position)
