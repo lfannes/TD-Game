@@ -26,13 +26,13 @@ class Game:
         pos.y = 330; self.path.add(pos, 1)
         pos.x = 1250; self.path.add(pos, 2)
         pos.x = 1350; self.path.add(pos, 2)
-        self.enemyList = list()
+        self.tower = Towers.Tower(0, 0)
         self.map = Map.Map()
-        self.tower = Towers.Tower(50, 210)
-        self.tower2 = Towers.Tower(850, 400)
         self.wave = Wave.Wave(self.path)
         self.wave.nextWave()
         self.score = Score.Score()
+        self.isSetupDone = False
+        self.setupTime = 0
 
 
 
@@ -41,10 +41,8 @@ class Game:
             self.time += diff_time
 
             self.map.draw(screen)
-            self.tower.draw(screen, self.time)
-            self.tower.shoot(self.wave.enemyList)
-            self.tower2.draw(screen, self.time)
-            self.tower2.shoot(self.wave.enemyList)
+            self.tower.draw(screen)
+            self.tower.shoot(self.wave.enemyList, self.time)
             self.wave.draw(screen, 0.5, self.path)
             self.score.draw(screen)
             self.score.hit(self.path, self.wave.enemyList)
@@ -73,3 +71,29 @@ class Game:
             screen.blit(victory, (300, 320))
 
         pygame.display.update()
+
+    def setup(self, screen, diff_time):
+        if not self.isSetupDone:
+            self.setupTime += diff_time
+            pos = pygame.mouse.get_pos()
+
+            self.map.draw(screen)
+            self.tower.position = Position.Position(pos[0] - 52, pos[1] - 81.5)
+            self.tower.draw(screen)
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    break
+
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    towerPos = pygame.mouse.get_pos()
+                    print(f"towerPos: {towerPos}")
+                    self.tower.position = Position.Position(pos[0] - 52, pos[1] - 81.5)
+                    self.tower.draw(screen)
+                    self.isSetupDone = True
+                    self.time = self.setupTime
+
+            pygame.display.update()
+        else:
+            return True

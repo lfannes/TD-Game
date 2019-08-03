@@ -8,7 +8,7 @@ myfont = pygame.font.Font('images/BAUHS93.TTF', 50)
 
 class Wave:
     def __init__(self, path):
-        self.enemyPerWave = (5, 6, 10)
+        self.enemyPerWave = (85, 90, 95, 100, 105, 110, 200)
         self.enemyList = []
         self.prev_pos = Position.Position(0, 0)
         self.wave = -1

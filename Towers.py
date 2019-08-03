@@ -9,7 +9,7 @@ class Tower:
         self.x = x
         self.y = y
         self.position = Position.Position(self.x, self.y)
-        self.damage = 1
+        self.damage = 50
         self.range = 200
         self.reload_ms = 500
         self.maxReload_ms = self.reload_ms
@@ -19,17 +19,18 @@ class Tower:
         self.prev_ms = 0
         self.isFullAmmo = True
 
-    def draw(self, screen, time):
-        self.time = time * 1000
-        self.diff_ms = self.time - self.prev_ms
-
-        screen.blit(towerImage, (self.position.x, self.position.y))
+    def draw(self, screen):
+        print("draw")
+        self.hitbox = (self.position.x, self.position.y, towerImage.get_width(), towerImage.get_height())
         width = 104 - (104 / self.maxReload_ms * (self.maxReload_ms - self.reload_ms))
         pygame.draw.rect(screen, (255, 0, 0), (self.hitbox[0], self.hitbox[1] - 15, 104, 10))
         pygame.draw.rect(screen, (0, 228, 0), (self.hitbox[0], self.hitbox[1] - 15, width, 10))
+        screen.blit(towerImage, (self.position.x, self.position.y))
 
         self.prev_ms = self.time
-    def shoot(self, enemyList):
+    def shoot(self, enemyList, time):
+        self.time = time * 1000
+        self.diff_ms = self.time - self.prev_ms
         if self.isFullAmmo:
             for enemy in enemyList:
                 distance = self.position.distance(enemy.position)
@@ -44,3 +45,11 @@ class Tower:
                 self.isFullAmmo = True
 
 
+if __name__ == '__main__':
+    tower = Tower(50, 30)
+    screen = pygame.display.set_mode((1200, 800))
+    pygame.display.set_caption('TD Game')
+    while True:
+        tower.position = Position.Position(500, 400)
+        tower.draw(screen)
+        pygame.display.update()

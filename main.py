@@ -17,10 +17,22 @@ def drawGame(diff_time):
 game = Game.Game()
 clock = pygame.time.Clock()
 
-run = True
 prev_ms = pygame.time.get_ticks()
+
+
+run = True
 while run:
     clock.tick(60)
+
+    while not game.isSetupDone:
+        now_ms = pygame.time.get_ticks()
+        diff_ms = now_ms - prev_ms
+        diff_s = diff_ms / 1000
+
+        game.setup(screen, diff_s)
+
+        prev_ms = now_ms
+
     now_ms = pygame.time.get_ticks()
     diff_ms = now_ms - prev_ms
     diff_s = diff_ms / 1000
