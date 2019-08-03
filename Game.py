@@ -9,6 +9,17 @@ import Score
 towerDefense = pygame.image.load('images/tower-defense.png')
 victory = pygame.image.load('images/victory.png')
 defeat = pygame.image.load('images/defeat.png')
+alphaTowerImage = Towers.towerImage.set_alpha(180)
+
+
+def blit_alpha(target, source, location, opacity):
+    x = location[0]
+    y = location[1]
+    temp = pygame.Surface((source.get_width(), source.get_height())).convert()
+    temp.blit(target, (-x, -y))
+    temp.blit(source, (0, 0))
+    temp.set_alpha(opacity)
+    target.blit(temp, location)
 
 class Game:
     def __init__(self):
@@ -78,8 +89,7 @@ class Game:
             pos = pygame.mouse.get_pos()
 
             self.map.draw(screen)
-            self.tower.position = Position.Position(pos[0] - 52, pos[1] - 81.5)
-            self.tower.draw(screen)
+            blit_alpha(screen, Towers.towerImage, (pos[0] - 52, pos[1] - 81.5), 180)
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
