@@ -8,16 +8,18 @@ myfont = pygame.font.Font('images/BAUHS93.TTF', 50)
 
 class Wave:
     def __init__(self, path):
-        self.enemyPerWave = (85, 90, 95, 100, 105, 110, 200)
+        self.enemyPerWave = (3, 5, 10, 18, 25, 32, 50)
         self.enemyList = []
         self.prev_pos = Position.Position(0, 0)
         self.wave = -1
         self.isDone = False
         self.path = path
 
-    def draw(self, screen, time, path):
+    def draw(self, screen, game):
         for enemy in self.enemyList:
-            enemy.draw(screen)
+            enemy.update(screen)
+            game.allSprites.add(enemy)
+
         waveLabel = myfont.render(f"Wave: {self.wave + 1}", 1, (119,136,153))
         screen.blit(waveLabel, (900, 75))
         if self.wave < len(self.enemyPerWave):

@@ -44,6 +44,10 @@ while run:
             run = False
 
     prev_ms = now_ms
-
+average = 0
+for number in game.avg:
+    average += number
+average = average/len(game.avg)
+print(f"average: {average*1000}")
 pygame.quit()
 

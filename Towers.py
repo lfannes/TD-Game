@@ -4,10 +4,15 @@ import math
 
 towerImage = pygame.image.load('images/tower.png')
 
-class Tower:
+class Tower(pygame.sprite.Sprite):
     def __init__(self, x, y):
+        pygame.sprite.Sprite.__init__(self)
         self.x = x
         self.y = y
+        self.image = towerImage
+        self.rect = self.image.get_rect()
+        self.rect.x = self.x
+        self.rect.y = self.y
         self.position = Position.Position(self.x, self.y)
         self.damage = 50
         self.range = 200
@@ -19,13 +24,19 @@ class Tower:
         self.prev_ms = 0
         self.isFullAmmo = True
 
+    def update(self, screen, enemyList, time):
+        self.shoot(enemyList, time)
+        self.draw(screen)
+
     def draw(self, screen):
-        print("draw")
+        print(f"x: {self.x}, y: {self.y}")
         self.hitbox = (self.position.x, self.position.y, towerImage.get_width(), towerImage.get_height())
+        screen.blit(self.image, (self.position.x, self.position.y))
         width = 104 - (104 / self.maxReload_ms * (self.maxReload_ms - self.reload_ms))
         pygame.draw.rect(screen, (255, 0, 0), (self.hitbox[0], self.hitbox[1] - 15, 104, 10))
         pygame.draw.rect(screen, (0, 228, 0), (self.hitbox[0], self.hitbox[1] - 15, width, 10))
-        screen.blit(towerImage, (self.position.x, self.position.y))
+
+
 
         self.prev_ms = self.time
     def shoot(self, enemyList, time):
