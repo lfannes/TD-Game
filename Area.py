@@ -1,6 +1,8 @@
 import pygame
 import Position
 
+polygonCordinate = ((0, 395))
+polygonLength = (pygame.Surface((150, 70)))
 pathImage = pygame.image.load('images/path.png')
 
 class Area(pygame.sprite.Sprite):
@@ -9,6 +11,7 @@ class Area(pygame.sprite.Sprite):
         self.position = Position.Position(0, 0)
         self.image = pathImage
         self.rect = self.image.get_rect()
+        self.rect.center = (600, 400)
 
     def update(self, screen, a=None, b=None):
         self.draw(screen)
@@ -17,7 +20,12 @@ class Area(pygame.sprite.Sprite):
         screen.blit(self.image, (self.position.x, self.position.y))
 
     def isClear(self, obj, group):
-        collision = pygame.sprite.spritecollide(obj, group, False)
-        print(collision)
+        collision = pygame.sprite.collide_mask(obj, group)
+        #print(collision)
         if collision:
+            print("collision")
             return True
+        else:
+            return False
+
+

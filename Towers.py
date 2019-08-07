@@ -9,11 +9,10 @@ class Tower(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.x = x
         self.y = y
+        self.position = Position.Position(self.x, self.y)
         self.image = towerImage
         self.rect = self.image.get_rect()
-        self.rect.x = self.x
-        self.rect.y = self.y
-        self.position = Position.Position(self.x, self.y)
+        self.rect.center = (self.position.x + 51, self.position.y + 81.5)
         self.damage = 50
         self.range = 200
         self.reload_ms = 500
@@ -24,7 +23,14 @@ class Tower(pygame.sprite.Sprite):
         self.prev_ms = 0
         self.isFullAmmo = True
 
+    def setupUpdate(self, screen):
+        self.rect.center = (self.position.x + 51, self.position.y + 81.5)
+        self.draw(screen)
+        print(self.rect.center)
+
     def update(self, screen, enemyList, time):
+        self.rect.center = (self.position.x + 51, self.position.y + 81.5)
+        print(self.rect.center)
         self.shoot(enemyList, time)
         self.draw(screen)
 

@@ -96,12 +96,13 @@ class Game:
         if not self.isSetupDone:
             self.setupTime += diff_time
             pos = pygame.mouse.get_pos()
-            collision = self.area.isClear(self.tower, self.unmovable)
+
+            # blit_alpha(screen, Towers.towerImage, (pos[0] - 52, pos[1] - 81.5), 180)
             self.map.draw(screen)
-            #blit_alpha(screen, Towers.towerImage, (pos[0] - 52, pos[1] - 81.5), 180)
             self.tower.position = Position.Position(pos[0] - 52, pos[1] - 81.5)
-            self.tower.draw(screen)
-            self.area.update(screen)
+            self.tower.setupUpdate(screen)
+
+            collision = self.area.isClear(self.tower, self.area)
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -110,7 +111,7 @@ class Game:
 
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     towerPos = pygame.mouse.get_pos()
-                    if collision:
+                    if collision == False:
                         self.movable.remove(self.tower)
                         self.unmovable.add(self.tower)
                         print(f"towerPos: {towerPos}")
