@@ -10,17 +10,9 @@ import Area
 towerDefense = pygame.image.load('images/tower-defense.png')
 victory = pygame.image.load('images/victory.png')
 defeat = pygame.image.load('images/defeat.png')
-alphaTowerImage = Towers.towerImage.set_alpha(180)
+my_font = pygame.font.Font('images/font.TTF', 50)
+lb1 = my_font.render("Can't place the tower there!!", False, (255, 51, 51))
 
-
-def blit_alpha(target, source, location, opacity):
-    x = location[0]
-    y = location[1]
-    temp = pygame.Surface((source.get_width(), source.get_height())).convert()
-    temp.blit(target, (-x, -y))
-    temp.blit(source, (0, 0))
-    temp.set_alpha(opacity)
-    target.blit(temp, location)
 
 class Game:
     def __init__(self):
@@ -53,13 +45,14 @@ class Game:
         self.movable = pygame.sprite.Group()
         self.movable.add(self.tower)
         self.avg = list()
+        self.timer = 0
+        self.startTimer = False
 
 
 
     def draw(self, screen, diff_time):
         if not self.wave.isDone:
             self.time += diff_time
-            print(diff_time)
             self.avg.append(diff_time)
             self.map.draw(screen)
             self.allSprites.update(screen, self.wave.enemyList, self.time)
@@ -97,12 +90,18 @@ class Game:
             self.setupTime += diff_time
             pos = pygame.mouse.get_pos()
 
-            # blit_alpha(screen, Towers.towerImage, (pos[0] - 52, pos[1] - 81.5), 180)
             self.map.draw(screen)
-            self.tower.position = Position.Position(pos[0] - 52, pos[1] - 81.5)
-            self.tower.setupUpdate(screen)
+            self.tower.placing(screen, 200, (pos[0] - 52, pos[1] - 81))
 
             collision = self.area.isClear(self.tower, self.area)
+
+            if self.startTimer:
+                screen.blit(lb1, (300, 50))
+                self.timer += diff_time
+                print(self.timer)
+                if self.timer >= 2.5:
+                    self.startTimer = False
+                    self.timer = 0
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -111,16 +110,19 @@ class Game:
 
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     towerPos = pygame.mouse.get_pos()
-                    if collision == False:
+                    if not collision:
                         self.movable.remove(self.tower)
                         self.unmovable.add(self.tower)
-                        print(f"towerPos: {towerPos}")
-                        self.tower.position = Position.Position(pos[0] - 52, pos[1] - 81.5)
+                        self.tower.place(towerPos)
                         self.tower.draw(screen)
                         self.isSetupDone = True
                         self.time = self.setupTime
                     else:
                         print(f"unable to place the tower on {towerPos}")
+
+                        screen.blit(lb1, (300, 50))
+                        self.startTimer = True
+
 
             pygame.display.flip()
         else:

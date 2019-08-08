@@ -21,9 +21,8 @@ class Area(pygame.sprite.Sprite):
 
     def isClear(self, obj, group):
         collision = pygame.sprite.collide_mask(obj, group)
-        #print(collision)
+        print(collision)
         if collision:
-            print("collision")
             return True
         else:
             return False

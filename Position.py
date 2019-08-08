@@ -18,6 +18,8 @@ class Position:
         else:
             return False
 
-    def distance(self, pos):
-        distance = math.sqrt((self.x - pos.x) ** 2 + (self.y - pos.y) ** 2)
+    def distance(self, pos, image=None):
+        width = image.get_width()/2
+        height = image.get_height()/2
+        distance = math.sqrt((self.x - pos.x + width) ** 2 + (self.y - pos.y + height) ** 2)
         return distance
