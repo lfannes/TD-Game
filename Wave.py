@@ -4,7 +4,7 @@ import pygame
 
 pygame.init()
 
-myfont = pygame.font.Font('images/font.TTF', 50)
+myfont = pygame.font.Font('images/font.ttf', 50)
 
 class Wave:
     def __init__(self, path):

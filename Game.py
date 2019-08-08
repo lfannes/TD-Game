@@ -10,7 +10,7 @@ import Area
 towerDefense = pygame.image.load('images/tower-defense.png')
 victory = pygame.image.load('images/victory.png')
 defeat = pygame.image.load('images/defeat.png')
-my_font = pygame.font.Font('images/font.TTF', 50)
+my_font = pygame.font.Font('images/font.ttf', 50)
 lb1 = my_font.render("Can't place the tower there!!", False, (255, 51, 51))
 
 
