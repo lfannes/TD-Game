@@ -4,6 +4,7 @@ myfont = pygame.font.Font('images/font.ttf', 50)
 
 class Score:
     def __init__(self):
+        self.score = 25
         self.health = 20
         self.maxHealth = 20
         self.isDead = False
@@ -13,12 +14,11 @@ class Score:
         pygame.draw.rect(screen, (255, 0, 0), (200, 650, 800, 15))
         pygame.draw.rect(screen, (0, 228, 0), (200, 650, width, 15))
 
-        scoreLabel = myfont.render(f"Health: {self.health}", 1, (119, 136, 153))
-        screen.blit(scoreLabel, (900, 35))
-        if self.isDead:
-            myfont2 = pygame.font.Font('images/BAUHS93.TTF', 150)
-            defeatLabel = myfont2.render("DEAFEAT", 1, (119, 136, 153))
-            screen.blit(defeatLabel, (200, 400))
+        healthLabel = myfont.render(f"Health: {self.health}", 1, (169, 186, 203))
+        screen.blit(healthLabel, (900, 35))
+
+        scoreLabel = myfont.render(f"Score: {self.score}", 1, (169, 186, 203))
+        screen.blit(scoreLabel, (900, 0))
 
     def hit(self, path, enemyList):
         for enemy in enemyList:

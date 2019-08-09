@@ -1,6 +1,5 @@
 import pygame
 import Game
-
 pygame.init()
 
 screenWidth = 1200
@@ -42,6 +41,10 @@ while run:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
+
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            mousePos = pygame.mouse.get_pos()
+            game.mouseEvent(screen, mousePos, pygame.mouse.get_pressed())
 
     prev_ms = now_ms
 average = 0

@@ -1,5 +1,6 @@
 import pygame
 
+
 background = pygame.image.load('images/background.png')
 
 class Map:

@@ -1,6 +1,7 @@
 import Position
 import util
 
+
 class Waypoint:
     def __init__(self, pos, time):
         self.pos = pos.copy()

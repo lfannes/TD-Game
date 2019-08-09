@@ -38,12 +38,14 @@ class Game:
         self.score = Score.Score()
         self.isSetupDone = False
         self.setupTime = 0
+
         self.allSprites = pygame.sprite.Group()
         self.allSprites.add(self.area, self.tower)
         self.unmovable = pygame.sprite.Group()
         self.unmovable.add(self.area)
         self.movable = pygame.sprite.Group()
         self.movable.add(self.tower)
+        self.enemies = pygame.sprite.Group()
         self.avg = list()
         self.timer = 0
         self.startTimer = False
@@ -55,8 +57,9 @@ class Game:
             self.time += diff_time
             self.avg.append(diff_time)
             self.map.draw(screen)
-            self.allSprites.update(screen, self.wave.enemyList, self.time)
-            self.wave.draw(screen, self)
+            self.tower.update(screen, self.wave.enemyList, self.time, diff_time)
+            self.enemies.update(screen, diff_time)
+            self.wave.draw(screen, self, diff_time)
             self.score.draw(screen)
             self.score.hit(self.path, self.wave.enemyList)
 
@@ -85,15 +88,19 @@ class Game:
 
         pygame.display.update()
 
+    def mouseEvent(self, screen, mousePos, pressed):
+        print("mouseEvent")
+        self.tower.towerActions(screen, mousePos, self, pressed)
+
     def setup(self, screen, diff_time):
         if not self.isSetupDone:
             self.setupTime += diff_time
             pos = pygame.mouse.get_pos()
 
             self.map.draw(screen)
-            self.tower.placing(screen, 200, (pos[0] - 52, pos[1] - 81))
-
             collision = self.area.isClear(self.tower, self.area)
+            self.tower.placing(screen, 200, (pos[0] - 50, pos[1] - 50), collision)
+
 
             if self.startTimer:
                 screen.blit(lb1, (300, 50))
@@ -114,7 +121,7 @@ class Game:
                         self.movable.remove(self.tower)
                         self.unmovable.add(self.tower)
                         self.tower.place(towerPos)
-                        self.tower.draw(screen)
+                        self.tower.draw(screen, diff_time)
                         self.isSetupDone = True
                         self.time = self.setupTime
                     else:

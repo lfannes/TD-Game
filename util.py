@@ -4,5 +4,7 @@ def interpol(xa, ya, xb, yb, x):
     q = ya - m*xa
     return m*x + q
 
-if __name__ == '__main__':
-    print(interpol(0, 0, 20, 1, 40))
+def pressedImage(mousePos, imageRect):
+    if mousePos[1] < imageRect[1] + imageRect[3] and mousePos[1] > imageRect[1]:
+        if mousePos[0] > imageRect[0] and mousePos[0] < imageRect[0] + imageRect[2]:
+            return True

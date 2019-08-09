@@ -2,6 +2,7 @@ import Enemy
 import Position
 import pygame
 
+
 pygame.init()
 
 myfont = pygame.font.Font('images/font.ttf', 50)
@@ -14,13 +15,17 @@ class Wave:
         self.wave = -1
         self.isDone = False
         self.path = path
+        self.passedTime = 0
 
-    def draw(self, screen, game):
+    def draw(self, screen, game, diff_time):
         for enemy in self.enemyList:
-            enemy.update(screen)
-            game.allSprites.add(enemy)
+            if enemy.isDead and enemy.checkIsDead:
+                game.score.score += 5
+                enemy.checkIsDead = False
+            enemy.update(screen, diff_time)
+            game.enemies.add(enemy)
 
-        waveLabel = myfont.render(f"Wave: {self.wave + 1}", 1, (119,136,153))
+        waveLabel = myfont.render(f"Wave: {self.wave + 1}", 1, (169, 186, 203))
         screen.blit(waveLabel, (900, 75))
         if self.wave < len(self.enemyPerWave):
             self.create()
@@ -29,6 +34,8 @@ class Wave:
 
     def nextWave(self):
         self.wave += 1
+        for enemy in self.enemyList:
+            enemy.kill()
         self.enemyList = []
         if self.wave >= len(self.enemyPerWave):
             self.isDone = True
@@ -39,14 +46,13 @@ class Wave:
 
 
     def create(self):
-        if not self.enemyList or self.enemyList[-1].position.overPos(self.path.get_pos(0.5)) and len(self.enemyList) < self.enemyPerWave[self.wave]:
+        if not self.enemyList or self.enemyList[-1].position.overPos(self.path.get_pos(0.75)) and len(self.enemyList) < self.enemyPerWave[self.wave]:
             #print("Creating new enemy...")
             self.enemyList.append(Enemy.Enemy(0, 420))
 
     def allDead(self):
         if self.wave < len(self.enemyPerWave):
             if self.enemyList[-1].isDead and len(self.enemyList) == self.enemyPerWave[self.wave]:
-                print("True111")
                 return True
 
 
