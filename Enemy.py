@@ -9,14 +9,16 @@ pathX = (45, 199, 199, 440, 440, 760, 760, 1200)
 pathY = (436, 436, 209, 209, 520, 520, 373, 373)
 
 class Enemy(pygame.sprite.Sprite):
-    def __init__(self, x, y):
+    def __init__(self, x, y, type):
         pygame.sprite.Sprite.__init__(self)
+        self.type = type
         self.x = x
         self.y = y
         self.image = enemyImage1
         self.rect = self.image.get_rect()
-        self.health = 100
-        self.maxHealth = 100
+        self.health = self.healthSwitch(self.type)
+        print(f"type: {self.type}, health:{self.health}")
+        self.maxHealth = self.health
         self.position = Position.Position(self.x, self.y)
         self.pos = self.position.copy()
         self.hitbox = (self.position.x, self.position.y, enemyImage1.get_width(), enemyImage1.get_height())
@@ -57,3 +59,11 @@ class Enemy(pygame.sprite.Sprite):
         if self.health <= 0:
             self.isDead = True
             return True
+    def healthSwitch(self, i):
+        switch = {
+                1:100,
+                2:150,
+                3:200,
+                4:300
+        }
+        return switch.get(i)

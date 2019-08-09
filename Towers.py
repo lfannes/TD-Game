@@ -142,28 +142,38 @@ class Tower(pygame.sprite.Sprite):
                 print("pressed upgrade")
                 print(pressed)
                 if pressed[0]:
-                    if game.score.score >= self.upgradeCost[self.upgradeCount]:
-                        self.damage += 25
-                        game.score.score -= self.upgradeCost[self.upgradeCount]
-                        self.upgradeCount += 1
+                    try:
+                        if game.score.score >= self.upgradeCost[self.upgradeCount]:
+                            self.damage += 25
+                            game.score.score -= self.upgradeCost[self.upgradeCount]
+                            self.upgradeCount += 1
 
-                        self.label = myfont.render(f"Upgrade succeed", False, (51, 255, 51))
-                        screen.blit(self.label, (300, 50))
-                        self.startTimer = True
+                            self.label = myfont.render(f"Upgrade succeed", False, (51, 255, 51))
+                            screen.blit(self.label, (300, 50))
+                            self.startTimer = True
 
-                    else:
-                        self.label = myfont.render("You don't have enough money", False, (255, 51, 51))
+                        else:
+                            self.label = myfont.render("You don't have enough money", False, (255, 51, 51))
+                            screen.blit(self.label, (300, 50))
+                            self.startTimer = True
+                    except IndexError:
+                        self.label = myfont.render("Your tower is fully upgraded", False, (255, 51, 51))
                         screen.blit(self.label, (300, 50))
                         self.startTimer = True
 
                 elif pressed[2]:
-                    self.label = myfont.render(f"cost: {self.upgradeCost[self.upgradeCount]}", False, (51, 255, 51))
-                    self.label2 = myfont.render(f"damage: {self.damage + 25}", False, (51, 255, 51))
+                    try:
+                        self.label = myfont.render(f"cost: {self.upgradeCost[self.upgradeCount]}", False, (51, 255, 51))
+                        self.label2 = myfont.render(f"damage: {self.damage + 25}", False, (51, 255, 51))
 
-                    screen.blit(self.label, (300, 50))
-                    screen.blit(self.label2, (300, 85))
+                        screen.blit(self.label, (300, 50))
+                        screen.blit(self.label2, (300, 85))
 
-                    self.startTimer = True
+                        self.startTimer = True
+                    except IndexError:
+                        self.label = myfont.render("Your tower is fully upgraded", False, (255, 51, 51))
+                        screen.blit(self.label, (300, 50))
+                        self.startTimer = True
 
 
         elif util.pressedImage(mousePos, self.sellRect):

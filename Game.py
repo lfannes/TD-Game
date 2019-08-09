@@ -71,7 +71,7 @@ class Game:
                     enemy.move(newEnemyPos)
 
             lastEnemyPos = True
-            if self.wave.wave < len(self.wave.enemyPerWave):
+            if self.wave.wave < len(self.wave.enemy1PerWave):
                 lastEnemyPos = self.path.get_pos(self.wave.enemyList[-1].time)
             if not lastEnemyPos or self.wave.allDead():
                 self.wave.nextWave()
