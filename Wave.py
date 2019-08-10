@@ -57,11 +57,11 @@ class Wave:
         self.enemyList = []
         self.enemyCount = 0
 
-        if self.wave >= len(self.enemy1PerWave):
+        if self.wave >= len(self.waves[self.wave]):
             self.isDone = True
             print("The game is done!")
 
-        if self.wave < len(self.enemy1PerWave) and not self.isDone:
+        if self.wave < len(self.waves[self.wave]) and not self.isDone:
             self.createEnemy()
 
 
@@ -76,8 +76,8 @@ class Wave:
 
 
     def allDead(self):
-        if self.wave < len(self.enemy1PerWave):
-            if self.enemyList[-1].isDead and len(self.enemyList) == self.enemy1PerWave[self.wave]:
+        if self.wave < len(self.waves[self.wave]):
+            if self.enemyList[-1].isDead and len(self.enemyList) == len(self.waves[self.wave]):
                 return True
 
 

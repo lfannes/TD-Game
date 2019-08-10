@@ -28,6 +28,7 @@ class Enemy(pygame.sprite.Sprite):
         self.isDead = False
         self.checkIsDead = True
         self.passedTime = 0
+        self.enemyImages = self.getAnimationImages()
 
     def __repr__(self):
         return f"Position: {self.position}"
@@ -44,12 +45,6 @@ class Enemy(pygame.sprite.Sprite):
             pygame.draw.rect(screen, (0, 228, 0), (self.hitbox[0], self.hitbox[1] - 15, width, 7))
             self.position.x - 22.5, self.position.y - 22.5, enemyImage1.get_width(), enemyImage1.get_height()
 
-            if self.passedTime < 500: #frame 1
-                screen.blit(enemyImage1, (self.position.x, self.position.y))
-            elif self.passedTime < 1000: #frame 2
-                screen.blit(enemyImage2, (self.position.x, self.position.y))
-            else:
-                self.passedTime = 0
             self.drawAnimation(screen)
 
 
@@ -72,22 +67,37 @@ class Enemy(pygame.sprite.Sprite):
         }
         return switch.get(self.type)
 
+    def getAnimationImages(self):
+        if self.type == 1:
+             return enemy1Images
+        elif self.type == 2:
+            return enemy1Images
+        elif self.type == 3:
+            return enemy1Images
+        elif self.type == 4:
+            return enemy1Images
+        else:
+            return False
+
     def drawAnimation(self, screen):
-        imageList = "enemy" + self.type + "Images"
-        if self.passedTime < 500:
-            screen.blit(vars(imageList), (100, 100))
+        print(self.enemyImages)
+        speed = 500
+        if self.passedTime < speed:
+            screen.blit(self.enemyImages[0], (self.position.x, self.position.y))
 
-        elif self.passedTime < 1000:
-            pass
+        elif self.passedTime < speed*2:
+            screen.blit(self.enemyImages[1], (self.position.x, self.position.y))
 
-        elif self.passedTime < 1000:
-            pass
+        elif self.passedTime < speed*3:
+            screen.blit(self.enemyImages[2], (self.position.x, self.position.y))
 
-        elif self.passedTime < 1000:
-            pass
+        elif self.passedTime < speed*4:
+            screen.blit(self.enemyImages[3], (self.position.x, self.position.y))
 
-        elif self.passedTime < 1000:
-            pass
+        elif self.passedTime < speed*5:
+            screen.blit(self.enemyImages[4], (self.position.x, self.position.y))
 
-        elif self.passedTime < 1000:
-            pass
+        elif self.passedTime < speed*6:
+            screen.blit(self.enemyImages[5], (self.position.x, self.position.y))
+        else:
+            self.passedTime = 0
