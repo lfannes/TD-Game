@@ -1,9 +1,13 @@
 import pygame
 import Position
+import util
 
-
-enemyImage1 = pygame.image.load('images/frame1.png')
-enemyImage2 = pygame.image.load('images/frame2.png')
+enemyImage1 = pygame.image.load('images/e10.png')
+enemyImage1 = pygame.transform.scale(enemyImage1, (enemyImage1.get_width()*3, enemyImage1.get_height()*3))
+enemyImage2 = pygame.image.load('images/e11.png')
+enemyImage2 = pygame.transform.scale(enemyImage2, (enemyImage2.get_width()*3, enemyImage2.get_height()*3))
+enemy1Images = [pygame.image.load('images/e10.png'), pygame.image.load('images/e11.png'), pygame.image.load('images/e12.png'), pygame.image.load('images/e13.png'), pygame.image.load('images/e14.png'), pygame.image.load('images/e15.png')]
+enemy1Images = util.scale(enemy1Images, 3)
 
 pathX = (45, 199, 199, 440, 440, 760, 760, 1200)
 pathY = (436, 436, 209, 209, 520, 520, 373, 373)
@@ -16,7 +20,7 @@ class Enemy(pygame.sprite.Sprite):
         self.y = y
         self.image = enemyImage1
         self.rect = self.image.get_rect()
-        self.health = self.healthSwitch(self.type)
+        self.health = self.healthSwitch()
         print(f"type: {self.type}, health:{self.health}")
         self.maxHealth = self.health
         self.position = Position.Position(self.x, self.y)
@@ -44,10 +48,12 @@ class Enemy(pygame.sprite.Sprite):
 
             if self.passedTime < 500: #frame 1
                 screen.blit(enemyImage1, (self.position.x, self.position.y))
-            elif self.passedTime < 1000 and self.passedTime > 150: #frame 2
+            elif self.passedTime < 1000: #frame 2
                 screen.blit(enemyImage2, (self.position.x, self.position.y))
             else:
                 self.passedTime = 0
+            self.drawAnimation(screen)
+
 
     def move(self, pos):
         self.position.x = pos.x
@@ -59,11 +65,31 @@ class Enemy(pygame.sprite.Sprite):
         if self.health <= 0:
             self.isDead = True
             return True
-    def healthSwitch(self, i):
+    def healthSwitch(self):
         switch = {
                 1:100,
                 2:150,
                 3:200,
                 4:300
         }
-        return switch.get(i)
+        return switch.get(self.type)
+
+    def drawAnimation(self, screen):
+        imageList = "enemy" + self.type + "Images"
+        if self.passedTime < 500:
+            screen.blit(vars(imageList), (100, 100))
+
+        elif self.passedTime < 1000:
+            pass
+
+        elif self.passedTime < 1000:
+            pass
+
+        elif self.passedTime < 1000:
+            pass
+
+        elif self.passedTime < 1000:
+            pass
+
+        elif self.passedTime < 1000:
+            pass
