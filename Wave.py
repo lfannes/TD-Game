@@ -1,7 +1,7 @@
 import Enemy
 import Position
 import pygame
-
+import random
 
 pygame.init()
 
@@ -19,8 +19,10 @@ class Wave:
     def __init__(self, path):
         self.waves = [
             [1, 1, 1],
-            [1, 1, 2, 1, 1, 1],
-            [1, 1, 1, 1, 2, 1, 2, 3, 1, 1, 1, 2],
+            [1, 1, 2, 2, 1, 1],
+            [1, 1, 1, 2, 2, 1, 2, 3, 2, 1, 3, 2],
+            [1, 1, 2, 2, 3, 4, 1, 2, 2, 4, 1, 2, 2, 3],
+            [1, 1, 2, 3, 3, 2, 1, 2, 3, 4, 4, 2, 3, 4, 1, 3, 4]
         ]
         self.enemy1PerWave = (3, 5, 10, 15, 15, 15, 15)
         self.enemy2PerWave = (0, 1, 3, 5, 7, 12, 20)
@@ -38,7 +40,7 @@ class Wave:
     def draw(self, screen, game, diff_time):
         for enemy in self.enemyList:
             if enemy.isDead and enemy.checkIsDead:
-                game.score.score += 5
+                game.score.score += enemy.score
                 enemy.checkIsDead = False
             enemy.update(screen, diff_time)
             game.enemies.add(enemy)
@@ -56,12 +58,17 @@ class Wave:
             enemy.kill()
         self.enemyList = []
         self.enemyCount = 0
+        newWave = list()
 
-        if self.wave >= len(self.waves[self.wave]):
-            self.isDone = True
-            print("The game is done!")
+        if self.wave >= len(self.waves):
+            for enemy in range(0, len(self.waves[self.wave - 1]) + 5):
+                enemy = random.randint(1, 4)
+                newWave.append(enemy)
+            self.waves.append(newWave)
 
-        if self.wave < len(self.waves[self.wave]) and not self.isDone:
+
+
+        if self.wave < len(self.waves) and not self.isDone:
             self.createEnemy()
 
 
