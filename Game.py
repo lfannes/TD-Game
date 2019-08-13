@@ -6,6 +6,7 @@ import Position
 import Wave
 import Score
 import Area
+import Shop
 
 towerDefense = pygame.image.load('images/tower-defense.png')
 victory = pygame.image.load('images/victory.png')
@@ -36,16 +37,13 @@ class Game:
         self.wave = Wave.Wave(self.path)
         self.wave.nextWave()
         self.score = Score.Score()
+        self.shop = Shop.Shop()
         self.isSetupDone = False
         self.setupTime = 0
-
-        self.allSprites = pygame.sprite.Group()
-        self.allSprites.add(self.area, self.tower)
-        self.unmovable = pygame.sprite.Group()
-        self.unmovable.add(self.area)
-        self.movable = pygame.sprite.Group()
-        self.movable.add(self.tower)
+        self.newTower = False
+        self.newTowerType = 0
         self.enemies = pygame.sprite.Group()
+        self.towerList = list()
         self.avg = list()
         self.timer = 0
         self.startTimer = False
@@ -56,13 +54,15 @@ class Game:
         if not self.wave.isDone:
             self.time += diff_time
             self.avg.append(diff_time)
+            screen.fill((47, 79, 79))
             self.map.draw(screen)
-            self.tower.update(screen, self.wave.enemyList, self.time, diff_time)
+            self.shop.draw(screen, diff_time, self)
+            for tower in self.towerList:
+                tower.update(screen, self.wave.enemyList, self.time, diff_time)
             self.enemies.update(screen, diff_time)
             self.wave.draw(screen, self, diff_time)
             self.score.draw(screen)
             self.score.hit(self.path, self.wave.enemyList)
-
 
             for enemy in self.wave.enemyList:
                 enemy.time += diff_time
@@ -81,6 +81,9 @@ class Game:
                 screen.blit(towerDefense, (450, 75))
                 screen.blit(defeat, (350, 370))
 
+            if self.newTower:
+                self.placeNewTower(screen, diff_time)
+
         if self.wave.isDone and not self.score.isDead:
             screen.fill((47,79,79))
             screen.blit(towerDefense, (450, 75))
@@ -90,17 +93,20 @@ class Game:
 
     def mouseEvent(self, screen, mousePos, pressed):
         print("mouseEvent")
-        self.tower.towerActions(screen, mousePos, self, pressed)
+        for tower in self.towerList:
+            tower.towerActions(screen, mousePos, self, pressed)
+        self.shop.shopActions(screen, mousePos, self)
 
     def setup(self, screen, diff_time):
         if not self.isSetupDone:
             self.setupTime += diff_time
             pos = pygame.mouse.get_pos()
-
+            screen.fill((47, 79, 79))
+            self.shop.draw(screen, None, self)
             self.map.draw(screen)
-            collision = self.area.isClear(self.tower, self.area)
-            self.tower.placing(screen, 200, (pos[0] - 50, pos[1] - 50), collision)
-
+            collision = self.area.isClear(self.tower, self.area, self.map, None)
+            print(f"col: {collision}")
+            self.tower.placing(screen, 200, (pos[0] - 50, pos[1] - 50), collision, 1)
 
             if self.startTimer:
                 screen.blit(lb1, (300, 50))
@@ -117,13 +123,13 @@ class Game:
 
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     towerPos = pygame.mouse.get_pos()
-                    if not collision:
-                        self.movable.remove(self.tower)
-                        self.unmovable.add(self.tower)
+                    if collision:
                         self.tower.place(towerPos)
                         self.tower.draw(screen, diff_time)
+                        self.towerList.append(self.tower)
                         self.isSetupDone = True
                         self.time = self.setupTime
+                        self.tower = Towers.Tower(0, 0)
                     else:
                         print(f"unable to place the tower on {towerPos}")
 
@@ -134,3 +140,34 @@ class Game:
             pygame.display.flip()
         else:
             return True
+
+    def placeNewTower(self, screen, diff_time):
+        pos = pygame.mouse.get_pos()
+
+        collisionList = list()
+        for item in self.towerList:
+            collision = self.area.isClear(self.tower, self.area, self.map, item)
+            collisionList.append(collision)
+
+        collision = True
+        for item in collisionList:
+            if item == False:
+                collision = False
+
+        self.tower.placing(screen, 200, (pos[0] - 50, pos[1] - 50), collision, self.newTowerType)
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                break
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                towerPos = pygame.mouse.get_pos()
+                if collision:
+                    self.tower.place(towerPos)
+                    self.tower.draw(screen, diff_time)
+                    self.towerList.append(self.tower)
+                    self.newTower = False
+                    self.tower = Towers.Tower(0, 0)
+            elif event.type == pygame.K_ESCAPE:
+                self.newTower = False
+                break

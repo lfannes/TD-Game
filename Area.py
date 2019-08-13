@@ -17,11 +17,28 @@ class Area(pygame.sprite.Sprite):
     def draw(self, screen):
         screen.blit(self.image, (self.position.x, self.position.y))
 
-    def isClear(self, obj, group):
-        collision = pygame.sprite.collide_mask(obj, group)
-        if collision:
+    def isClear(self, obj, path, map, tower):
+        pathCollision = pygame.sprite.collide_mask(obj, path)
+        mapCollsion = pygame.sprite.collide_mask(obj, map)
+        if tower:
+            towerCollsion = pygame.sprite.collide_circle(obj, tower)
+        else:
+            towerCollsion = None
+
+        print(f"map: {mapCollsion}")
+        print(f"path: {pathCollision}")
+        print(f"tower: {towerCollsion}")
+
+        if not pathCollision and  not towerCollsion and mapCollsion:
+            print("true")
             return True
         else:
+            print("false")
             return False
 
 
+
+
+if __name__ == '__main__':
+    area = Area()
+    path = pygame.sprite.collide_mask()

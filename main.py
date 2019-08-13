@@ -2,7 +2,7 @@ import pygame
 import Game
 pygame.init()
 
-screenWidth = 1200
+screenWidth = 1200+300
 screenHeight = 800
 
 #globals(screenWidth, screenHeight)

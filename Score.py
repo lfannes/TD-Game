@@ -4,7 +4,7 @@ myfont = pygame.font.Font('images/font.ttf', 50)
 
 class Score:
     def __init__(self):
-        self.score = 25
+        self.score = 2500
         self.health = 20
         self.maxHealth = 20
         self.isDead = False

@@ -11,9 +11,12 @@ def pressedImage(mousePos, imageRect):
         if mousePos[0] > imageRect[0] and mousePos[0] < imageRect[0] + imageRect[2]:
             return True
 
-def scale(imageList, factor):
+def scaleList(imageList, factor):
     scaledImageList = list()
     for image in imageList:
         scaledImageList.append(pygame.transform.scale(image, (image.get_width()*factor, image.get_height()*factor)))
 
     return scaledImageList
+
+def scaleSingleImage(image, factor):
+    return pygame.transform.scale(image, (int(image.get_width()*factor), int(image.get_height()*factor)))

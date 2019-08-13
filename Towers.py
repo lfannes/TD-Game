@@ -1,25 +1,32 @@
 import pygame
 import Position
 import util
+import time
 
 pygame.init()
 
 myfont = pygame.font.Font('images/font.ttf', 50)
 
-tower1Images = [pygame.image.load('images/tower20.png'), pygame.image.load('images/tower21.png')]
-tower1Images = util.scale(tower1Images, 2)
+tower1 = [pygame.image.load('images/tower20.png'), pygame.image.load('images/tower21.png')]
+tower1 = util.scaleList(tower1, 2)
 
-tower1UpgradeImages = [pygame.image.load('images/tower22.png'), pygame.image.load('images/tower23.png')]
-tower1UpgradeImages = util.scale(tower1UpgradeImages, 2)
+tower11 = [pygame.image.load('images/tower22.png'), pygame.image.load('images/tower23.png')]
+tower11 = util.scaleList(tower11, 2)
+
+tower2 = [pygame.image.load('images/tower30.png'), pygame.image.load('images/tower30.png')]
+tower2 = util.scaleList(tower2, 2)
+
+tower21 = [pygame.image.load('images/tower31.png'), pygame.image.load('images/tower31.png')]
+tower21 = util.scaleList(tower21, 2)
 
 upgrade = pygame.image.load('images/upgrade.png')
-upgrade = pygame.transform.scale(upgrade, (48, 48))
+upgrade = util.scaleSingleImage(upgrade, 0.75)
 
 sell = pygame.image.load('images/sell.png')
-sell = pygame.transform.scale(sell, (48, 48))
+sell = util.scaleSingleImage(sell, 0.75)
 
 replace = pygame.image.load('images/replace.png')
-replace = pygame.transform.scale(replace, (48, 48))
+replace = util.scaleSingleImage(replace, 0.75)
 
 
 class Tower(pygame.sprite.Sprite):
@@ -28,10 +35,10 @@ class Tower(pygame.sprite.Sprite):
         self.x = x
         self.y = y
         self.position = Position.Position(self.x, self.y)
-        self.image = tower1Images[0]
+        self.image = tower1[0]
         self.rect = self.image.get_rect()
         self.rect.center = (self.position.x + 50, self.position.y + 50)
-        self.damage = 50
+        self.damage = 0
         self.range = 150
         self.reload_ms = 500
         self.maxReload_ms = self.reload_ms
@@ -50,25 +57,29 @@ class Tower(pygame.sprite.Sprite):
         self.startTimer = False
         self.timer = 0
         self.label = None
-        self.label2 = None
-        self.type = 1
+        self.type = 0
+        self.maxUpgraded = False
 
-    def placing(self, screen, alpha, pos, collision):
-        self.rect.center = (self.position.x + self.image.get_width()/2, self.position.y + self.image.get_height()/2)
+    def placing(self, screen, alpha, pos, collision, type):
+        self.type = type
+        self.damage = self.getDamage(self.type)
         self.position = Position.Position(pos[0], pos[1])
+        self.rect.center = (self.position.x + self.image.get_width() / 2, self.position.y + self.image.get_height() / 2)
+        print("placing")
         if collision:
-            pygame.draw.circle(screen, (255, 24, 24, 180), self.rect.center, self.range)
-        else:
             pygame.draw.circle(screen, (24, 255, 24, 180), self.rect.center, self.range)
-        self.draw(screen, alpha)
+            print(self.rect.center)
+            print("green")
+        else:
+            print("red")
+            pygame.draw.circle(screen, (255, 24, 24, 180), self.rect.center, self.range)
+        self.draw(screen, None, alpha)
 
     def place(self, pos):
         self.position = Position.Position(pos[0] - 50, pos[1] - 50)
 
     def update(self, screen, enemyList, time, diff_time, a=None):
-        self.rect.center = (self.position.x + self.image.get_width()/2, self.position.y + self.image.get_height()/2)
-        if self.type == 1 and self.upgradeCount >= 1:
-            self.type = 2
+        self.rect.center = (self.position.x + self.image.get_width() / 2, self.position.y + self.image.get_height() / 2)
         self.shoot(enemyList, time)
         self.draw(screen, diff_time)
 
@@ -77,43 +88,59 @@ class Tower(pygame.sprite.Sprite):
             self.selectMenu(screen)
 
         if self.type == 1:
-            self.image = tower1Images[1]
-            self.hitbox = (self.position.x, self.position.y, self.image.get_width(), self.image.get_height())
-        elif self.type == 2:
-            self.image = tower1UpgradeImages[1]
+            self.image = self.getAnimationImages()[1]
             self.hitbox = (self.position.x, self.position.y, self.image.get_width(), self.image.get_height())
 
-        if self.type == 1:
             if self.isFullAmmo:
-                blit_alpha(screen, tower1Images[1], (self.position.x, self.position.y), alpha)
+                blit_alpha(screen, tower1[1], (self.position.x, self.position.y), alpha)
             elif self.reload_ms >= self.maxReload_ms - 150:
-                blit_alpha(screen, tower1Images[1], (self.position.x, self.position.y), alpha)
+                blit_alpha(screen, tower1[1], (self.position.x, self.position.y), alpha)
             else:
-                blit_alpha(screen, tower1Images[0], (self.position.x, self.position.y), alpha)
+                blit_alpha(screen, tower1[0], (self.position.x, self.position.y), alpha)
+        elif self.type == 1.1:
+            self.image = self.getAnimationImages()[1]
+            self.hitbox = (self.position.x, self.position.y, self.image.get_width(), self.image.get_height())
 
-        elif self.type == 2:
             if self.isFullAmmo:
-                blit_alpha(screen, tower1UpgradeImages[1], (self.position.x, self.position.y), alpha)
+                blit_alpha(screen, tower11[1], (self.position.x, self.position.y), alpha)
             elif self.reload_ms >= self.maxReload_ms - 150:
-                blit_alpha(screen, tower1UpgradeImages[1], (self.position.x, self.position.y), alpha)
+                blit_alpha(screen, tower11[1], (self.position.x, self.position.y), alpha)
             else:
-                blit_alpha(screen, tower1UpgradeImages[0], (self.position.x, self.position.y), alpha)
+                blit_alpha(screen, tower11[0], (self.position.x, self.position.y), alpha)
+        elif self.type == 2:
+            self.image = self.getAnimationImages()[1]
+            self.hitbox = (self.position.x, self.position.y, self.image.get_width(), self.image.get_height())
+
+            if self.isFullAmmo:
+                blit_alpha(screen, tower2[1], (self.position.x, self.position.y), alpha)
+            elif self.reload_ms >= self.maxReload_ms - 150:
+                blit_alpha(screen, tower2[1], (self.position.x, self.position.y), alpha)
+            else:
+                blit_alpha(screen, tower2[0], (self.position.x, self.position.y), alpha)
+        elif self.type == 2.1:
+            self.image = self.getAnimationImages()[1]
+            self.hitbox = (self.position.x, self.position.y, self.image.get_width(), self.image.get_height())
+
+            if self.isFullAmmo:
+                blit_alpha(screen, tower21[1], (self.position.x, self.position.y), alpha)
+            elif self.reload_ms >= self.maxReload_ms - 150:
+                blit_alpha(screen, tower21[1], (self.position.x, self.position.y), alpha)
+            else:
+                blit_alpha(screen, tower21[0], (self.position.x, self.position.y), alpha)
 
         if not self.isMenuVisible:
-            width = self.image.get_width() - (self.image.get_width() / self.maxReload_ms * (self.maxReload_ms - self.reload_ms))
+            width = self.image.get_width() - (
+                        self.image.get_width() / self.maxReload_ms * (self.maxReload_ms - self.reload_ms))
             pygame.draw.rect(screen, (255, 0, 0), (self.hitbox[0], self.hitbox[1] - 15, self.image.get_width(), 10))
             pygame.draw.rect(screen, (0, 228, 0), (self.hitbox[0], self.hitbox[1] - 15, width, 10))
 
         if self.startTimer:
             screen.blit(self.label, (300, 50))
-            if self.label2:
-                screen.blit(self.label2, (300, 85))
             self.timer += diff_time
             print(self.timer)
             if self.timer >= 2.5:
                 self.startTimer = False
                 self.timer = 0
-                self.label2 = None
 
         self.prev_ms = self.time
 
@@ -146,82 +173,154 @@ class Tower(pygame.sprite.Sprite):
             pygame.draw.circle(screen, (192, 192, 192, 80), self.rect.center, self.range)
 
         if self.type == 1:
-            screen.blit(upgrade, (self.position.x + tower1Images[1].get_width() / 2 - upgrade.get_width() / 2, self.position.y + tower1Images[1].get_width() / 2 - 125)) #draw the upgrade
-            self.upgradeRect.topleft = (self.position.x + tower1Images[1].get_width() / 2 - upgrade.get_width() / 2, self.position.y + tower1Images[1].get_width() / 2 - 125)
+            screen.blit(upgrade, (self.position.x + tower1[1].get_width() / 2 - upgrade.get_width() / 2,
+                                  self.position.y + tower1[1].get_width() / 2 - 125))  # draw the upgrade
+            self.upgradeRect.topleft = (self.position.x + tower1[1].get_width() / 2 - upgrade.get_width() / 2,
+                                        self.position.y + tower1[1].get_width() / 2 - 125)
 
-            screen.blit(sell, (self.position.x + tower1Images[1].get_width() / 2 - upgrade.get_width() / 2 ,self.position.y + tower1Images[1].get_width() / 2 + 77))  # draw the upgrade
-            self.sellRect.topleft = (self.position.x + tower1Images[1].get_width() / 2 - upgrade.get_width() / 2,self.position.y + tower1Images[1].get_width() / 2 + 77)
+            screen.blit(sell, (self.position.x + tower1[1].get_width() / 2 - upgrade.get_width() / 2,
+                               self.position.y + tower1[1].get_width() / 2 + 77))  # draw the upgrade
+            self.sellRect.topleft = (self.position.x + tower1[1].get_width() / 2 - upgrade.get_width() / 2,
+                                     self.position.y + tower1[1].get_width() / 2 + 77)
+        elif self.type == 1.1:
+            screen.blit(upgrade, (self.position.x + tower11[1].get_width() / 2 - upgrade.get_width() / 2,
+                                  self.position.y + tower11[1].get_width() / 2 - 125))  # draw the upgrade
+            self.upgradeRect.topleft = (self.position.x + tower11[1].get_width() / 2 - upgrade.get_width() / 2, self.position.y + tower11[1].get_width() / 2 - 125)
+
+            screen.blit(sell, (self.position.x + tower11[1].get_width() / 2 - upgrade.get_width() / 2,
+                               self.position.y + tower11[1].get_width() / 2 + 77))  # draw the upgrade
+            self.sellRect.topleft = (self.position.x + tower11[1].get_width() / 2 - upgrade.get_width() / 2,
+                                     self.position.y + tower11[1].get_width() / 2 + 77)
         elif self.type == 2:
-            screen.blit(upgrade, (self.position.x + tower1UpgradeImages[1].get_width() / 2 - upgrade.get_width() / 2,
-                                  self.position.y + tower1UpgradeImages[1].get_width() / 2 - 125))  # draw the upgrade
-            self.upgradeRect.topleft = (self.position.x + tower1UpgradeImages[1].get_width() / 2 - upgrade.get_width() / 2,
-                                        self.position.y + tower1UpgradeImages[1].get_width() / 2 - 125)
+            screen.blit(upgrade, (self.position.x + tower2[1].get_width() / 2 - upgrade.get_width() / 2,
+                                  self.position.y + tower2[1].get_width() / 2 - 125))  # draw the upgrade
+            self.upgradeRect.topleft = (self.position.x + tower2[1].get_width() / 2 - upgrade.get_width() / 2, self.position.y + tower2[1].get_width() / 2 - 125)
 
-            screen.blit(sell, (self.position.x + tower1UpgradeImages[1].get_width() / 2 - upgrade.get_width() / 2,
-                               self.position.y + tower1UpgradeImages[1].get_width() / 2 + 77))  # draw the upgrade
-            self.sellRect.topleft = (self.position.x + tower1UpgradeImages[1].get_width() / 2 - upgrade.get_width() / 2,
-                                     self.position.y + tower1UpgradeImages[1].get_width() / 2 + 77)
+            screen.blit(sell, (self.position.x + tower2[1].get_width() / 2 - upgrade.get_width() / 2,
+                               self.position.y + tower2[1].get_width() / 2 + 77))  # draw the upgrade
+            self.sellRect.topleft = (self.position.x + tower2[1].get_width() / 2 - upgrade.get_width() / 2,
+                                     self.position.y + tower2[1].get_width() / 2 + 77)
+        elif self.type == 2.1:
+            screen.blit(upgrade, (self.position.x + tower21[1].get_width() / 2 - upgrade.get_width() / 2,
+                                  self.position.y + tower21[1].get_width() / 2 - 125))  # draw the upgrade
+            self.upgradeRect.topleft = (self.position.x + tower21[1].get_width() / 2 - upgrade.get_width() / 2, self.position.y + tower21[1].get_width() / 2 - 125)
 
+            screen.blit(sell, (self.position.x + tower21[1].get_width() / 2 - upgrade.get_width() / 2,
+                               self.position.y + tower21[1].get_width() / 2 + 77))  # draw the upgrade
+            self.sellRect.topleft = (self.position.x + tower21[1].get_width() / 2 - upgrade.get_width() / 2,
+                                     self.position.y + tower21[1].get_width() / 2 + 77)
+
+    def upgrade(self, screen, game):
+        if self.type == 1:
+            if game.score.score >= self.getPrice(self.type):
+                self.type = 1.1
+                self.damage = self.getDamage(self.type)
+                game.score.score -= self.getPrice(self.type)
+                self.image = self.getAnimationImages()[1]
+
+                self.label = myfont.render(f"Upgrade succeed", False, (51, 255, 51))
+                screen.blit(self.label, (300, 50))
+                self.startTimer = True
+            else:
+                self.label = myfont.render("You don't have enough money", False, (255, 51, 51))
+                screen.blit(self.label, (300, 50))
+                self.startTimer = True
+        elif self.type == 1.1:
+            if game.score.score >= self.getPrice(self.type):
+                self.reload_ms = 400
+
+                self.label = myfont.render(f"Upgrade succeed", False, (51, 255, 51))
+                screen.blit(self.label, (300, 50))
+                self.startTimer = True
+                self.maxUpgraded = True
+            else:
+                self.label = myfont.render("You don't have enough money", False, (255, 51, 51))
+                screen.blit(self.label, (300, 50))
+                self.startTimer = True
+        elif self.type == 2:
+            if game.score.score >= self.getPrice(self.type):
+                self.type = 2.1
+                self.damage = self.getDamage(self.type)
+                game.score.score -= self.getPrice(self.type)
+                self.image = self.getAnimationImages()[1]
+
+                self.label = myfont.render(f"Upgrade succeed", False, (51, 255, 51))
+                screen.blit(self.label, (300, 50))
+                self.startTimer = True
+            else:
+                self.label = myfont.render("You don't have enough money", False, (255, 51, 51))
+                screen.blit(self.label, (300, 50))
+                self.startTimer = True
+        elif self.type == 2.1:
+            if game.score.score >= self.getPrice(self.type):
+                self.reload_ms = 300
+                self.maxUpgraded = True
+        else:
+            self.label = myfont.render("Your tower is fully upgraded", False, (255, 51, 51))
+            screen.blit(self.label, (300, 50))
+            self.startTimer = True
 
     def towerActions(self, screen, mousePos, game, pressed):
         if util.pressedImage(mousePos, self.hitbox):
-                #when the tower is pressed
-                print("pressed the tower")
-                self.selected()
+            # when the tower is pressed
+            print("pressed the tower")
+            self.selected()
 
         elif util.pressedImage(mousePos, self.upgradeRect):
-                #when upgrade is presssed
-                print("pressed upgrade")
-                print(pressed)
-                if pressed[0]:
-                    try:
-                        if game.score.score >= self.upgradeCost[self.upgradeCount]:
-                            self.damage += 25
-                            game.score.score -= self.upgradeCost[self.upgradeCount]
-                            self.upgradeCount += 1
+            # upgrade pressed
+            if pressed[0]:
+                # upgrade
+                self.upgrade(screen, game)
 
-                            if self.type == 2 and self.upgradeCount == 3:
-                                self.maxReload_ms = 400
-
-                            self.label = myfont.render(f"Upgrade succeed", False, (51, 255, 51))
-                            screen.blit(self.label, (300, 50))
-                            self.startTimer = True
-
-                        else:
-                            self.label = myfont.render("You don't have enough money", False, (255, 51, 51))
-                            screen.blit(self.label, (300, 50))
-                            self.startTimer = True
-                    except IndexError:
-                        self.label = myfont.render("Your tower is fully upgraded", False, (255, 51, 51))
-                        screen.blit(self.label, (300, 50))
-                        self.startTimer = True
-
-                elif pressed[2]:
-                    try:
-                        self.label = myfont.render(f"cost: {self.upgradeCost[self.upgradeCount]}", False, (51, 255, 51))
-                        self.label2 = myfont.render(f"damage: {self.damage + 25}", False, (51, 255, 51))
-
-                        screen.blit(self.label, (300, 50))
-                        screen.blit(self.label2, (300, 85))
-
-                        self.startTimer = True
-                    except IndexError:
-                        self.label = myfont.render("Your tower is fully upgraded", False, (255, 51, 51))
-                        screen.blit(self.label, (300, 50))
-                        self.startTimer = True
-
+            elif pressed[2]:
+                # info about upgrade
+                self.label = myfont.render(f"cost: {self.getPrice(self.type)}", False, (51, 255, 51))
+                screen.blit(self.label, (300, 50))
+                self.startTimer = True
+                if self.maxUpgraded:
+                    self.label = myfont.render("Your tower is fully upgraded", False, (255, 51, 51))
+                    screen.blit(self.label, (300, 50))
+                    self.startTimer = True
 
         elif util.pressedImage(mousePos, self.sellRect):
-                #when sell is pressed
-                print("pressed sell")
+            # sell is pressed
+            if pressed[0]:
+                game.score.score += self.getPrice(self.type)
+                game.towerList.remove(self)
+            elif pressed[2]:
+                self.label = myfont.render(f"score: {self.getPrice(self.type) + game.score.score}", False, (51, 255, 51))
+                screen.blit(self.label, (300, 50))
+                self.startTimer = True
 
     def getAnimationImages(self):
         if self.type == 1:
-             return tower1Images
+            return tower1
+        elif self.type == 1.1:
+            return tower11
         elif self.type == 2:
-            return tower1UpgradeImages
+            return tower2
+        elif self.type == 2.1:
+            return tower21
         else:
             return False
+
+    def getPrice(self, type):
+        switch = {
+            1: 50,
+            1.1: 80,
+            2: 80,
+            2.1: 120
+        }
+        return switch.get(type)
+
+    def getDamage(self, type):
+        switch = {
+            1: 75,
+            1.1: 150,
+            2: 150,
+            2.1: 250
+        }
+        return switch.get(type)
 
 
 def blit_alpha(target, source, location, opacity):
