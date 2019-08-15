@@ -87,10 +87,10 @@ class Tower(pygame.sprite.Sprite):
         if self.isMenuVisible:
             self.selectMenu(screen)
 
-        if self.type == 1:
-            self.image = self.getAnimationImages()[1]
-            self.hitbox = (self.position.x, self.position.y, self.image.get_width(), self.image.get_height())
+        self.image = self.getAnimationImages()[1]
+        self.hitbox = (self.position.x, self.position.y, self.image.get_width(), self.image.get_height())
 
+        if self.type == 1:
             if self.isFullAmmo:
                 blit_alpha(screen, tower1[1], (self.position.x, self.position.y), alpha)
             elif self.reload_ms >= self.maxReload_ms - 150:
@@ -108,9 +108,6 @@ class Tower(pygame.sprite.Sprite):
             else:
                 blit_alpha(screen, tower11[0], (self.position.x, self.position.y), alpha)
         elif self.type == 2:
-            self.image = self.getAnimationImages()[1]
-            self.hitbox = (self.position.x, self.position.y, self.image.get_width(), self.image.get_height())
-
             if self.isFullAmmo:
                 blit_alpha(screen, tower2[1], (self.position.x, self.position.y), alpha)
             elif self.reload_ms >= self.maxReload_ms - 150:
@@ -118,9 +115,6 @@ class Tower(pygame.sprite.Sprite):
             else:
                 blit_alpha(screen, tower2[0], (self.position.x, self.position.y), alpha)
         elif self.type == 2.1:
-            self.image = self.getAnimationImages()[1]
-            self.hitbox = (self.position.x, self.position.y, self.image.get_width(), self.image.get_height())
-
             if self.isFullAmmo:
                 blit_alpha(screen, tower21[1], (self.position.x, self.position.y), alpha)
             elif self.reload_ms >= self.maxReload_ms - 150:
@@ -225,9 +219,9 @@ class Tower(pygame.sprite.Sprite):
                 self.label = myfont.render("You don't have enough money", False, (255, 51, 51))
                 screen.blit(self.label, (300, 50))
                 self.startTimer = True
-        elif self.type == 1.1:
+        elif self.type == 1.1 and not self.maxUpgraded:
             if game.score.score >= self.getPrice(self.type):
-                self.reload_ms = 400
+                self.maxReload_ms = 400
 
                 self.label = myfont.render(f"Upgrade succeed", False, (51, 255, 51))
                 screen.blit(self.label, (300, 50))
@@ -251,10 +245,14 @@ class Tower(pygame.sprite.Sprite):
                 self.label = myfont.render("You don't have enough money", False, (255, 51, 51))
                 screen.blit(self.label, (300, 50))
                 self.startTimer = True
-        elif self.type == 2.1:
+        elif self.type == 2.1 and not self.maxUpgraded:
             if game.score.score >= self.getPrice(self.type):
-                self.reload_ms = 300
+                self.maxReload_ms = 300
                 self.maxUpgraded = True
+
+                self.label = myfont.render(f"Upgrade succeed", False, (51, 255, 51))
+                screen.blit(self.label, (300, 50))
+                self.startTimer = True
         else:
             self.label = myfont.render("Your tower is fully upgraded", False, (255, 51, 51))
             screen.blit(self.label, (300, 50))
@@ -265,32 +263,34 @@ class Tower(pygame.sprite.Sprite):
             # when the tower is pressed
             print("pressed the tower")
             self.selected()
+        if self.isMenuVisible:
+            if util.pressedImage(mousePos, self.upgradeRect):
+                # upgrade pressed
+                if pressed[0]:
+                    # upgrade
+                    self.upgrade(screen, game)
+                    self.isMenuVisible = False
 
-        elif util.pressedImage(mousePos, self.upgradeRect):
-            # upgrade pressed
-            if pressed[0]:
-                # upgrade
-                self.upgrade(screen, game)
-
-            elif pressed[2]:
-                # info about upgrade
-                self.label = myfont.render(f"cost: {self.getPrice(self.type)}", False, (51, 255, 51))
-                screen.blit(self.label, (300, 50))
-                self.startTimer = True
-                if self.maxUpgraded:
-                    self.label = myfont.render("Your tower is fully upgraded", False, (255, 51, 51))
+                elif pressed[2]:
+                    # info about upgrade
+                    self.label = myfont.render(f"cost: {self.getPrice(self.type)}", False, (51, 255, 51))
                     screen.blit(self.label, (300, 50))
                     self.startTimer = True
+                    if self.maxUpgraded:
+                        self.label = myfont.render("Your tower is fully upgraded", False, (255, 51, 51))
+                        screen.blit(self.label, (300, 50))
+                        self.startTimer = True
 
-        elif util.pressedImage(mousePos, self.sellRect):
-            # sell is pressed
-            if pressed[0]:
-                game.score.score += self.getPrice(self.type)
-                game.towerList.remove(self)
-            elif pressed[2]:
-                self.label = myfont.render(f"score: {self.getPrice(self.type) + game.score.score}", False, (51, 255, 51))
-                screen.blit(self.label, (300, 50))
-                self.startTimer = True
+            elif util.pressedImage(mousePos, self.sellRect):
+                # sell is pressed
+                if pressed[0]:
+                    game.score.score += self.getPrice(self.type)
+                    game.towerList.remove(self)
+                    self.isMenuVisible = False
+                elif pressed[2]:
+                    self.label = myfont.render(f"score: {self.getPrice(self.type) + game.score.score}", False, (51, 255, 51))
+                    screen.blit(self.label, (300, 50))
+                    self.startTimer = True
 
     def getAnimationImages(self):
         if self.type == 1:

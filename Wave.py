@@ -36,6 +36,8 @@ class Wave:
         self.passedTime = 0
         self.enemyCount = 0
         self.enemyFactory = EnemyFactory()
+        self.timeForNextEnemy = 0.75
+        self.extraHealth = 0
 
     def draw(self, screen, game, diff_time):
         for enemy in self.enemyList:
@@ -53,11 +55,13 @@ class Wave:
 
 
     def nextWave(self):
+        self.extraHealth = self.wave*5
         self.wave += 1
         for enemy in self.enemyList:
             enemy.kill()
         self.enemyList = []
         self.enemyCount = 0
+        self.timeForNextEnemy *= 0.95
         newWave = list()
 
         if self.wave >= len(self.waves):
@@ -74,10 +78,11 @@ class Wave:
 
     def createEnemy(self):
         moreEnemiesAreNeeded = len(self.enemyList) < len(self.waves[self.wave])
-        isItTimeToCreateNextEnemy = self.enemyList[-1].position.overPos(self.path.get_pos(0.75)) if self.enemyList else True
+        isItTimeToCreateNextEnemy = self.enemyList[-1].position.overPos(self.path.get_pos(self.timeForNextEnemy)) if self.enemyList else True
         if moreEnemiesAreNeeded and isItTimeToCreateNextEnemy:
             enemy = self.enemyFactory.create(self.waves[self.wave][self.enemyCount])
             enemy.position = Position.Position(0, 420)
+            enemy.health += self.extraHealth
             self.enemyList.append(enemy)
             self.enemyCount += 1
 
